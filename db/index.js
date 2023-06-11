@@ -19,7 +19,7 @@ const options = {
 const pool = mysql.createPool(options);
 const promisePool = pool.promise();
 
-export const querySql = async (sql) => {
+const querySql = async (sql) => {
   try {
     const [rows, fields] = await promisePool.execute(sql);
     return rows;
@@ -56,3 +56,7 @@ const createTable = async () => {
 }
 
 createTable();
+
+module.exports = {
+  querySql
+}

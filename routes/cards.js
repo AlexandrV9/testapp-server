@@ -9,10 +9,10 @@ const {
 
 const cardRouter = express.Router();
 
-// cardRouter.get('/', getAllCards);
-// cardRouter.get('/:id', getCard);
-// cardRouter.post('/', addNewCard);
-// cardRouter.delete('/:id', deleteCard);
-// cardRouter.patch('/:id', updateCard)
+cardRouter.get('/', getAllCards);
+cardRouter.get('/:id', getCard);
+cardRouter.post('/', addNewCard);
+cardRouter.delete('/:id', deleteCard);
+cardRouter.patch('/:id', updateCard)
 
 module.exports = cardRouter;
