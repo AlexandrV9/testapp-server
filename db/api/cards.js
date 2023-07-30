@@ -3,8 +3,35 @@ const { querySql } = require("../index.js");
 class CardAPI {
 
   getAll = async () => {
-    const sql = `SELECT * FROM cards`
+    const sql = `SELECT * FROM cards`;
     return querySql(sql);
+  }
+  
+  getCards = async ({
+    page,
+    pageSize
+  }) => {
+
+    if(page <= 0 || pageSize <= 0) {
+      throw new Error("Свойства page и pageSize не могут быть отрицательными")
+    }
+
+    const sql1 = `SELECT COUNT(*) as total_cards FROM cards`;
+    const res1 = await querySql(sql1);
+
+    const totalCards = res1[0].total_cards;
+    const pageCount = Math.ceil(totalCards / pageSize);
+    const offset = (page - 1) * pageSize;
+
+    const sql2 = `SELECT * FROM cards LIMIT ${pageSize} OFFSET ${offset}`;
+    const listCards = await querySql(sql2);
+
+    return {
+      data: listCards,
+      page,
+      pageSize,
+      pageCount,
+    }
   }
 
   create = async ({ ownerId, title, url }) => {
@@ -33,6 +60,16 @@ class CardAPI {
     const sql = `DELETE FROM cards WHERE id=${cardId}`;
     const data = await querySql(sql);
     return data;
+  }
+
+  likeCard = async ({
+    cardId
+  }) => {
+
+  }
+
+  dislikeCard = async () => {
+
   }
   
   updateCardById = async ({ cardId, title = "",  url = "" }) => {
@@ -68,6 +105,8 @@ class CardAPI {
     await querySql(sql);
     return this.getById({ cardId });
   }
+
+
 
 }
 

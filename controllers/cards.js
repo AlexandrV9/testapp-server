@@ -5,6 +5,22 @@ const getAllCards = async (req, res) => {
   res.send(data)
 }
 
+const getCards = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 5;
+    const data = await cardAPI.getCards({
+      page,
+      pageSize
+    });
+    res.send(data)
+  } catch(error) {
+    res.status(404).send({
+      message: error.message
+    })
+  }
+}
+
 const getCardsUser = async (req, res) => {
   const { owner_id } = req.query;
   const data = await cardAPI.getCardsUser({ owner_id });
@@ -57,6 +73,7 @@ const updateCard = async (req, res) => {
 module.exports = {
   getAllCards,
   getCardsUser,
+  getCards,
   addNewCard,
   getCard,
   deleteCard,

@@ -1,7 +1,8 @@
 const express = require("express");
 const { 
   addNewCard, 
-  getAllCards, 
+  // getAllCards, 
+  getCards,
   deleteCard, 
   getCard, 
   updateCard, 
@@ -9,7 +10,7 @@ const {
 
 const cardRouter = express.Router();
 
-cardRouter.get('/', getAllCards);
+cardRouter.get('/', getCards);
 cardRouter.get('/:id', getCard);
 cardRouter.post('/', addNewCard);
 cardRouter.delete('/:id', deleteCard);
