@@ -27,6 +27,31 @@ const getCardsUser = async (req, res) => {
   res.send(data)
 }
 
+const likeCard = async (req, res) => {
+  try {
+    const { id: cardId } = req.params;
+    const { emailUser } = req.body;
+    const data = await cardAPI.likeCard({ cardId, emailUser });
+    res.send(data)
+  } catch (error) {
+    res.status(404).send({
+      message: error.message
+    })
+  }
+}
+
+const dislikeCard = async (req, res) => {
+  try {
+    const { id: cardId } = req.params;
+    const { emailUser } = req.body;
+    const data = await cardAPI.dislikeCard({ cardId, emailUser });
+    res.send(data)
+  } catch (error) {
+    res.status(404).send({
+      message: error.message
+    })
+  }
+}
 
 const addNewCard = async (req, res) => {
   const { ownerId , title, url } = req.body;
@@ -76,6 +101,8 @@ module.exports = {
   getCards,
   addNewCard,
   getCard,
+  likeCard,
+  dislikeCard,
   deleteCard,
   updateCard
 }

@@ -35,7 +35,6 @@ class CardAPI {
   }
 
   create = async ({ ownerId, title, url }) => {
-    console.log({ ownerId, title, url })
     const sql = `INSERT INTO cards (owner_id, title, url) VALUES (${ownerId}, '${title}', '${url}')`;
     const dataSuccessfulCreation = await querySql(sql);
     if (!dataSuccessfulCreation) {
@@ -63,13 +62,67 @@ class CardAPI {
   }
 
   likeCard = async ({
-    cardId
+    cardId,
+    emailUser
   }) => {
+    const card = await this.getById({ cardId });
 
+    if(card.length === 0) {
+      throw new Error("Карточки с таким id не существует")
+    }
+
+    // Проверяем есть в массиве лайков хоть одна почта пользователя лайкнувшего карточку. 
+    // Если никто не лайкал будет has_likes = 0
+    const sql1 = `SELECT IFNULL(JSON_LENGTH(likes) > 0, false) AS has_likes FROM cards WHERE id = ${cardId}`;
+    const res1 = await querySql(sql1);
+
+    if(res1[0].has_likes === 0) {
+      let sql2 = `UPDATE cards SET likes = JSON_ARRAY('${emailUser}') WHERE id = ${cardId}`;
+      await querySql(sql2);
+      return this.getById({ cardId });
+    }
+
+    // Проверям лайкал ли пользователь уже эту карточку. Если нет, то res3[0].email будет равный null
+    const sql3 = `SELECT JSON_SEARCH(likes, 'one', '${emailUser}') AS email FROM cards WHERE id = ${cardId}`;
+    const res3 = await querySql(sql3);
+
+    if(res3[0].email) {
+      throw new Error("Вы уже лайкнули эту карточку")
+    }
+
+    // В массиве лайков есть почты других пользователей, но нашего нет. Просто добавляем его
+    let sql4 = `UPDATE cards SET likes = JSON_ARRAY_APPEND(likes, '$', '${emailUser}') WHERE id = ${cardId};`;
+    await querySql(sql4);
+
+    return this.getById({ cardId });
   }
 
-  dislikeCard = async () => {
+  dislikeCard = async ({
+    cardId,
+    emailUser
+  }) => {
+    const card = await this.getById({ cardId });
 
+    if(card.length === 0) {
+      throw new Error("Карточки с таким id не существует")
+    }
+
+    // Проверям лайкал ли пользователь уже эту карточку. Если нет, то res3[0].email будет равный null
+    const sql1 = `SELECT JSON_SEARCH(likes, 'one', '${emailUser}') AS email FROM cards WHERE id = ${cardId}`;
+    const res1 = await querySql(sql1);
+    const indexEmail = res1[0].email;
+
+    if(!indexEmail) {
+      throw new Error("Такой пользователь на лайкал данную карточку")
+    }
+
+    // Если пользователь лайкал эту карточку, то в indexEmail будет лежать индекс почты пользователя.
+    // Далее просто по этому индексу удаляем почту
+
+    const sql2 = `UPDATE cards SET likes = JSON_REMOVE(likes, '${indexEmail}') WHERE id = ${cardId}`;
+    await querySql(sql2);
+
+    return this.getById({ cardId });
   }
   
   updateCardById = async ({ cardId, title = "",  url = "" }) => {
