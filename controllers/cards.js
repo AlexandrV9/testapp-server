@@ -2,6 +2,7 @@ const cardAPI = require("../db/api/cards.js")
 
 const getAllCards = async (req, res) => {
   const data = await cardAPI.getAll();
+  // console.log(req.user)
   res.send(data)
 }
 
@@ -55,9 +56,7 @@ const dislikeCard = async (req, res) => {
 
 const addNewCard = async (req, res) => {
   const { ownerId , title, url } = req.body;
-  console.log("Выполнени запроса к БД")
   const data = await cardAPI.create({ ownerId , title, url });
-  console.log("Отправка созданной карточки")
   res.send(data)
 }
 

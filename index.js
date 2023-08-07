@@ -1,7 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+
 const router = require('./routes/index.js');
+const { createUser, loginUser } = require("./controllers/auth.js");
+const auth = require('./middlewares/auth');
 
 const app = express();
 
@@ -13,7 +16,10 @@ app.get("/", (req, res) => {
   res.send("test")
 })
 
-app.use("/", router);
+app.post('signup', createUser);
+app.post('/signin', loginUser);
+
+app.use("/", auth, router);
 
 const PORT = process.env.PORT || 8080;
 
