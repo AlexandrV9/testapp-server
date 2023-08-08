@@ -10,9 +10,13 @@ const createUser = async (req, res) => {
   try {
     if(!name || !email || !password) throw new Error("Нужные поля для создания пользователя не переданы")
     const user = await authAPI.createUser({ name, email, password });
-    res.send(user)
+    
+    res.send({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    })
   } catch(error) {
-    if(error.message) return res.status(404).send({ message: error.message });
     res.status(404).send({
       message: "Такой пользователь с такой почтой уже существует"
     })

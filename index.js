@@ -16,7 +16,7 @@ app.get("/", (req, res) => {
   res.send("test")
 })
 
-app.post('signup', createUser);
+app.post('/signup', createUser);
 app.post('/signin', loginUser);
 
 app.use("/", auth, router);
