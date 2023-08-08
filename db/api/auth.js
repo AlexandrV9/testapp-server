@@ -32,13 +32,15 @@ class AuthAPI {
 
   createUser = async ({ email, password, name }) => {
     const hash = await bcrypt.hash(password, 10);
-    const sql1 = `INSERT INTO users (email, name, password) VALUES ('${email}', '${name}', '${hash}')`;
-    await querySql(sql1);
+    console.log(hash)
+    // const sql1 = `INSERT INTO users (email, name, password) VALUES ('${email}', '${name}', '${hash}')`;
+    // await querySql(sql1);
 
-    const sql2 = `SELECT * FROM users WHERE email='${email}'`;
-    const res2 = await querySql(sql2);
+    // const sql2 = `SELECT * FROM users WHERE email='${email}'`;
+    // const res2 = await querySql(sql2);
 
-    return res2[0];
+    // return res2[0];
+    return ""
   }
 
 }
