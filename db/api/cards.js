@@ -9,21 +9,22 @@ class CardAPI {
   
   getCards = async ({
     page,
-    pageSize
+    pageSize,
+    title
   }) => {
 
     if(page <= 0 || pageSize <= 0) {
       throw new Error("Свойства page и pageSize не могут быть отрицательными")
     }
 
-    const sql1 = `SELECT COUNT(*) as total_cards FROM cards`;
+    const sql1 = `SELECT COUNT(*) as total_cards FROM cards WHERE LOWER(title) LIKE '%${title}%'`;
     const res1 = await querySql(sql1);
 
     const totalCards = res1[0].total_cards;
     const pageCount = Math.ceil(totalCards / pageSize);
     const offset = (page - 1) * pageSize;
 
-    const sql2 = `SELECT * FROM cards LIMIT ${pageSize} OFFSET ${offset}`;
+    const sql2 = `SELECT * FROM cards WHERE LOWER(title) LIKE '%${title}%' LIMIT ${pageSize} OFFSET ${offset}`;
     const listCards = await querySql(sql2);
 
     return {

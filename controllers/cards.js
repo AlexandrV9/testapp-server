@@ -10,9 +10,11 @@ const getCards = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 5;
+    const title = req.query.title || "";
     const data = await cardAPI.getCards({
       page,
-      pageSize
+      pageSize,
+      title
     });
     res.send(data)
   } catch(error) {
