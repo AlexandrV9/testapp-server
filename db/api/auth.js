@@ -1,34 +1,37 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { querySql } = require("../index.js");
 
 class AuthAPI {
-
   loginUser = async ({ email, password }) => {
     const sql1 = `SELECT * FROM users WHERE email='${email}'`;
     const res1 = await querySql(sql1);
 
-    if(res1.length === 0) {
+    if (res1.length === 0) {
       throw new Error("Неправильные почта или пароль");
     }
 
-    const user = res1[0];
+    const { 
+      id, 
+      name, 
+      email: emailUser, 
+      password: userPassword 
+    } = res1[0];
 
-    const matched = await bcrypt.compare(password, user.password);
+    const matched = await bcrypt.compare(password, userPassword);
 
-    if(!matched) {
+    if (!matched) {
       throw new Error("Неправильные почта или пароль");
     }
 
-    const token = jwt.sign(
-      { id: user.id }, 
-      'some-secret-key', 
-      { expiresIn: "2h" }
-    )
+    const token = jwt.sign({ id }, "some-secret-key", { expiresIn: "2h" });
 
-    return { token };
-
-  }
+    return {
+      token,
+      email: emailUser,
+      name,
+    };
+  };
 
   createUser = async ({ email, password, name }) => {
     const hash = await bcrypt.hash(password, 10);
@@ -39,10 +42,8 @@ class AuthAPI {
     const res2 = await querySql(sql2);
 
     return res2[0];
-  }
-
+  };
 }
-
 
 const authAPI = new AuthAPI();
 
