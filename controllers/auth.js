@@ -31,7 +31,24 @@ const loginUser = async (req, res) => {
   }
 };
 
+const checkToken = async (req, res) => {
+  const { authorization } = req.headers;
+  try {
+    if (!authorization || !authorization.startsWith('Bearer ')) {
+      throw new Error("Токен отсутствует");
+    }
+    const token = authorization.replace('Bearer ', '');
+    const user = await authAPI.checkToken({ token });
+    res.send(user);
+  } catch (error) {
+    res.status(404).send({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
+  checkToken,
 };
